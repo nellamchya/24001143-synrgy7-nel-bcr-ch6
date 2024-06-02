@@ -1,0 +1,68 @@
+import { NextFunction, Request, Response } from "express";
+import authService from "../../service/superadmin/authService";
+import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
+import usersService from "../../service/usersService";
+
+const encryptPassword = (password: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(password, 10, (err, hash) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(hash);
+    });
+  });
+};
+
+// Superadmin register new admin
+export const register = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { name, username, password, email } = req.body;
+    const existingUser = await usersService.getUserByUsername(username);
+
+    if (!username || !password || !name || !email) {
+      res.status(400).json({
+        status: false,
+        message: "Username, password, email and name are required",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      res.status(400).json({
+        status: false,
+        message: "Password must be at least 6 characters",
+      });
+      return;
+    }
+
+    if (existingUser) {
+      res.status(400).json({
+        status: false,
+        message: "Username already exists",
+      });
+      return;
+    }
+
+    const hashedPassword = await encryptPassword(password);
+
+    const payload = {
+      ...req.body,
+      id: uuidv4(),
+      password: hashedPassword,
+      role: "admin",
+    };
+
+    const registerAdmin = await authService.register(payload);
+
+    if (registerAdmin) {
+      res.status(201).json({ status: true, message: "Register new admin successfully", data: registerAdmin });
+    } else {
+      res.status(400).json({ status: false, message: "Failed to register admin" });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Internal Server Error" });
+  }
+};

@@ -1,0 +1,75 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Cars Management API",
+        "version": "1.0.0",
+        "description": "API Challenge Chapter 6"
+    },
+    "servers": [{
+        "url": "http://localhost:8000/api/v1"
+    }],
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "paths": {
+        "/me": {
+            "get": {
+                "summary": "Retrieve data of current user",
+                "security": {
+                    "bearerAuth": []
+                },
+                "response": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Get current user successfully"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "4e1c8681-a911-466f-94a1-929e0750fc71"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "admin2"
+                                                    },
+                                                    "username": {
+                                                        "type": "string",
+                                                        "example": "admin2"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "admin2@mail.co.id"
+                                                    },
+                                                    "role": {
+                                                        "type": "string",
+                                                        "example": "admin"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
